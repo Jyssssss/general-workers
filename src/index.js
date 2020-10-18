@@ -1,13 +1,44 @@
-import Router from "./router"
-import Link from "./Link"
+import {
+  linkData,
+  siteUrl,
+  profileName,
+  profileUrl
+} from "./data"
 
-const data = [
-  new Link("Cloudflare", "https://www.cloudflare.com/"),
-  new Link("Google", "https://www.google.com/"),
-  new Link("Apple", "https://www.apple.com/")
-];
+import Router from "./Router"
+import LinksTransformer from './ElementHandler/LinksTransformer'
 
-const siteUrl = "https://static-links-page.signalnerve.workers.dev/";
+addEventListener('fetch', event => {
+  event.respondWith(handleEvent(event))
+});
+
+async function handleEvent(event) {
+  const router = new Router();
+  router.get("/links", () => new Response(JSON.stringify(linkData, null, 2), {
+    headers: {
+      "content-type": "application/json;charset=UTF-8"
+    }
+  }));
+
+  router.get("/", async () => {
+    const init = {
+      headers: {
+        "content-type": "text/html;charset=UTF-8",
+      },
+    }
+    const siteResponse = await fetch(siteUrl, init);
+    const results = await gatherResponse(siteResponse);
+    const response = new Response(results, init);
+    return new HTMLRewriter()
+      .on("div#profile", { element: element => element.removeAttribute("style") })
+      .on("img#avatar", { element: element => element.setAttribute("src", profileUrl) })
+      .on("h1#name", { element: element => element.append(profileName) })
+      .on("div#links", new LinksTransformer(linkData))
+      .transform(response);
+  });
+
+  return router.route(event.request)
+}
 
 async function gatherResponse(response) {
   const { headers } = response
@@ -25,30 +56,3 @@ async function gatherResponse(response) {
     return await response.text()
   }
 }
-
-addEventListener("fetch", event => {
-  const router = new Router();
-  router.get("/links", () => new Response(JSON.stringify(data, null, 2), {
-    headers: {
-      "content-type": "application/json;charset=UTF-8"
-    }
-  }));
-
-  router.get("/", async () => {
-    const init = {
-      headers: {
-        "content-type": "text/html;charset=UTF-8",
-      },
-    }
-    const response = await fetch(siteUrl, init);
-    const results = await gatherResponse(response);
-    return new Response(results, init);
-  });
-
-  event.respondWith(async function () {
-    return await router.route(event.request);
-  }());
-})
-
-
-
