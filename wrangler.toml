@@ -1,0 +1,7 @@
+name = "general-assignment"
+type = "webpack"
+account_id = "03ede7fe8e99948e4617ad761d6b29a2"
+workers_dev = true
+route = ""
+zone_id = ""
+webpack_config = "webpack.config.js"
