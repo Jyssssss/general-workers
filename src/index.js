@@ -1,5 +1,6 @@
 import {
   linkData,
+  socialLinkData,
   siteUrl,
   profileName,
   profileUrl
@@ -7,6 +8,7 @@ import {
 
 import Router from "./Router"
 import LinksTransformer from './ElementHandler/LinksTransformer'
+import SocialElementHandler from "./ElementHandler/SocialElementHandler"
 
 addEventListener('fetch', event => {
   event.respondWith(handleEvent(event))
@@ -32,8 +34,11 @@ async function handleEvent(event) {
     return new HTMLRewriter()
       .on("div#profile", { element: element => element.removeAttribute("style") })
       .on("img#avatar", { element: element => element.setAttribute("src", profileUrl) })
-      .on("h1#name", { element: element => element.append(profileName) })
+      .on("h1#name", { element: element => element.setInnerContent(profileName) })
       .on("div#links", new LinksTransformer(linkData))
+      .on("div#social", new SocialElementHandler(socialLinkData))
+      .on("head > title", { element: element => element.setInnerContent(profileName) })
+      .on("body", { element: element => element.setAttribute("style", "background-color: cadetblue") })
       .transform(response);
   });
 
