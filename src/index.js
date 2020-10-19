@@ -7,8 +7,8 @@ import {
 } from "./data"
 
 import Router from "./Router"
-import LinksTransformer from './ElementHandler/LinksTransformer'
-import SocialElementHandler from "./ElementHandler/SocialElementHandler"
+import LinksTransformer from './ElementHandlers/LinksTransformer'
+import SocialElementHandler from "./ElementHandlers/SocialElementHandler"
 
 addEventListener('fetch', event => {
   event.respondWith(handleEvent(event))

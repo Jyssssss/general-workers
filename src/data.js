@@ -1,5 +1,5 @@
-import Link from "./Model/Link"
-import SocialLink from "./Model/SocialLink"
+import Link from "./Models/Link"
+import SocialLink from "./Models/SocialLink"
 
 export const linkData = [
     new Link("Cloudflare", "https://www.cloudflare.com/"),
